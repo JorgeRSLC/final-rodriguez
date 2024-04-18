@@ -1,0 +1,15 @@
+<h2>{{title}}</h2>
+<table>
+    <thead>
+      <tr>
+        <th>Player ID</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let player of players">
+        <td>{{ player.alias }}</td>
+        <td>{{ player.score }}</td>
+      </tr>
+    </tbody>
+  </table>
