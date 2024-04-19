@@ -1,1 +1,7 @@
-<p>tic-tac-toe works!</p>
+<h2>{{roundWinner}}</h2>
+<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+  <button (click)="setPlayerMove('rock')">Rock</button>
+  <button (click)="setPlayerMove('paper')">Paper</button>
+  <button (click)="setPlayerMove('scissors')">Scissors</button>
+</div>
+<button (click)="playRound()">Play Round</button>
