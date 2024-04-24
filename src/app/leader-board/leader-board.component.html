@@ -7,7 +7,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let player of players">
+      <tr *ngFor="let player of players | sortByScore">
         <td>{{ player.alias }}</td>
         <td>{{ player.score }}</td>
       </tr>

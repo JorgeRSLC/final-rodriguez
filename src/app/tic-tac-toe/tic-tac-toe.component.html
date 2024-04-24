@@ -1,7 +1,15 @@
-<h2>{{roundWinner}}</h2>
-<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-  <button (click)="setPlayerMove('rock')">Rock</button>
-  <button (click)="setPlayerMove('paper')">Paper</button>
-  <button (click)="setPlayerMove('scissors')">Scissors</button>
-</div>
-<button (click)="playRound()">Play Round</button>
+<h2 class="player-info">Player {{mainPlayer?.alias}} is on deck</h2>
+<h3>
+    <span *ngIf="winner !== 'no winner yet' && winnerSet">Winner: {{winner}}</span>
+    <span *ngIf="winner === 'no winner yet' && !gameStarted">Game not started</span>
+    <span *ngIf="winner === 'no winner yet' && gameStarted">Game in progress</span>
+</h3>
+<div class="tic-tac-toe-board">
+    <button *ngFor="let tile of board" class="tic-tac-toe-button" 
+        [disabled]="!gameStarted || tile.value !== 'open' || winnerSet" 
+        (click)="userChoice(tile)">{{tile.value}}</button>
+  </div>
+  <button class="start-game-button" [disabled]="gameStarted" 
+            (click)="startGame()">Start Game</button>
+<button class="reset-game-button" *ngIf="winner  !== 'no winner yet' && winnerSet" 
+            (click)="resetBoard()">Reset Game</button>

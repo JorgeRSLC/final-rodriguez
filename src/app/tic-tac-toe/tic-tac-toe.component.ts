@@ -1,77 +1,122 @@
-import { Component } from '@angular/core';
-import { AiPlayerService } from '../ai-player.service';
+import { Component, Input , SimpleChanges} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Tile } from '../tile';
+import { FormsModule } from '@angular/forms';
+import { Player } from '../player';
+import { StorageService } from '../storage.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tic-tac-toe',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './tic-tac-toe.component.html',
   styleUrl: './tic-tac-toe.component.css'
 })
 export class TicTacToeComponent {
 
-  roundWinner: string = '';
-  playerMove: string = '';
-  playerMovePromise!: Promise<void>;
-  playerMoveResolve!: () => void;
-  constructor(private aiPlayerService: AiPlayerService) {
-    this.resetPlayerMovePromise();
-   }
-
-   resetPlayerMovePromise() {
-    this.playerMovePromise = new Promise<void>(resolve => {
-      this.playerMoveResolve = resolve;
-    });
-  }
-
-  async playRound() {
-    const results = [];
-    for (let i = 0; i < 3; i++) {
-      await this.playerMovePromise; // Wait for the player to make a move
-      const playerMove = this.playerMove;
-      const computerMove = await this.getComputerMoveWithDelay();
-      const roundWinner = this.getRoundWinner(playerMove, computerMove);
-      if(roundWinner === 'tie') {
-        i--;
-        continue;
-      }
-      results.push(roundWinner);
-      this.roundWinner = roundWinner;
-      this.resetPlayerMovePromise(); // Reset the promise for the next round
+  @Input() mainPlayer!: Player;
+  board: Tile[];
+  gameStarted: boolean = false;
+  winner: string = '';
+  winnerSet: boolean = false;
+  isComputerPlaying: boolean = false;
+  
+  constructor(private storageService: StorageService) {
+    
+    this.board = [];
+    for (let i = 0; i < 9; i++) {
+      this.board.push(new Tile('open', i));
     }
-    sessionStorage.setItem('gameResults', JSON.stringify(results));
   }
 
-  getPlayerMove(): string {
-    return this.playerMove;
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes['mainPlayer'] && changes['mainPlayer'].currentValue) {
+      await this.storageService.updateGlobalLeaderBoard(this.mainPlayer.playerId, 
+        this.mainPlayer.score);
+    }
   }
 
-  setPlayerMove(move: string): void {
-    this.playerMove = move;
-    this.playerMoveResolve(); // Resolve the promise when the player makes a move
+  startGame() {
+    this.gameStarted = true;
   }
 
-  getComputerMoveWithDelay(): Promise<string> {
-    return new Promise(resolve => {
+  userChoice(tile: Tile) {
+    if (this.isComputerPlaying) return;
+    if (tile.value === 'open') {
+      tile.value = 'X';
+      this.computerChoice();
+    }
+    this.checkWinner();
+  }
+
+  computerChoice() {
+    this.isComputerPlaying = true;
+    if(this.winnerSet) return;
+    const openTiles = this.board.filter(tile => tile.value === 'open');
+    if (openTiles.length > 0) {
+      const randomTile = openTiles[Math.floor(Math.random() * openTiles.length)];
       setTimeout(() => {
-        const move = this.aiPlayerService.computerPlay();
-        resolve(move);
-      }, 3000);
-    });
-  }
-
-  getRoundWinner(playerMove: string, computerMove: string): string {
-    // Implement this method to determine the winner 
-    if (playerMove === computerMove) {
-      return 'tie';
-    } else if (
-      (playerMove === 'rock' && computerMove === 'scissor') ||
-      (playerMove === 'scissor' && computerMove === 'paper') ||
-      (playerMove === 'paper' && computerMove === 'rock')
-    ) {
-      return 'player';
-    } else {
-      return 'computer';
+        if(this.winnerSet) return;
+        randomTile.value = 'O';
+        this.checkWinner();
+        this.isComputerPlaying = false;
+      }, 2000);
     }
   }
+  
+  async checkWinner(): Promise<string> {
+    const winningCombinations = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+  
+    for (let combination of winningCombinations) {
+      if (
+        this.board[combination[0]].value === this.board[combination[1]].value &&
+        this.board[combination[1]].value === this.board[combination[2]].value
+      ) {
+        if (this.board[combination[0]].value === 'X') {
+          this.mainPlayer.score++;
+          await this.storageService.updateLocalLeaderBoard(this.mainPlayer.playerId, 
+                this.mainPlayer.score);
+          await this.storageService.updateGlobalLeaderBoard(this.mainPlayer.playerId,
+                this.mainPlayer.score);
+          this.winner = 'player';
+          this.winnerSet = true;
+          return this.winner;
+        } else if (this.board[combination[0]].value === 'O') {
+          this.winner = 'computer';
+          this.winnerSet = true;
+          return this.winner;
+        }
+      }
+    }
+  
+    if (this.board.every(tile => tile.value !== 'open')) {
+      this.winner = 'tie';
+      this.winnerSet = true;
+      return this.winner;
+    }
+    this.winner = 'no winner yet';
+    return this.winner;
+  }
+  
+  resetBoard() {
+    this.board = [];
+    for (let i = 0; i < 9; i++) {
+      this.board.push(new Tile('open', i));
+    }
+    this.gameStarted = false;
+    this.winner = '';
+    this.winnerSet = false;
+    this.isComputerPlaying = false;
+  }
+
 }

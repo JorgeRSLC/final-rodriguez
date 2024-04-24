@@ -1,52 +1,26 @@
-.winner {
-    text-align: center;
-    font-size: 2em;
-    margin-bottom: 20px;
-  }
-  
-  .button-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  
-  .move-button {
-    flex: 1;
-    margin: 0 10px;
-    padding: 10px;
-    font-size: 1.2em;
-    background-color: #4CAF50; /* Green */
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    transition-duration: 0.4s;
-    cursor: pointer;
-  }
-  
-  .move-button:hover {
-    background-color: white; 
-    color: black; 
-    border: 2px solid #4CAF50;
-  }
-  
-  .play-button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    font-size: 1.2em;
-    background-color: #008CBA; /* Blue */
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    transition-duration: 0.4s;
-    cursor: pointer;
-  }
-  
-  .play-button:hover {
-    background-color: white;
-    color: black;
-    border: 2px solid #008CBA;
-  }
+.tic-tac-toe-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  width: 200px;
+  height: 200px;
+}
+
+.tic-tac-toe-button {
+  width: 100%;
+  height: 100%;
+  font-size: 1.5em;
+}
+
+.start-game-button,
+.reset-game-button {
+  display: block; /* Makes the button a block element */
+  margin: 20px auto 0; /* Centers the button horizontally */
+  padding: 5px; /* Half the original padding */
+  font-size: 0.75em; /* Half the original font size */
+}
+
+.reset-game-button {
+  margin-top: 10px; /* Adds a small gap between the buttons */
+}

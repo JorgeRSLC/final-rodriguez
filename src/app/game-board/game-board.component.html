@@ -1,3 +1,9 @@
-<h2>Player {{mainPlayer?.alias}} is on deck</h2>
-<app-leader-board [isGlobal]="false"></app-leader-board>
-<app-tic-tac-toe></app-tic-tac-toe>
+<div class="game-container">  
+    <div class="leader-board-container">
+      <app-leader-board [isGlobal]="false"></app-leader-board>
+    </div>
+    <!-- <app-rock-paper-scissor [mainPlayer]="mainPlayer" class="game-component"></app-rock-paper-scissor> -->
+    <app-tic-tac-toe [mainPlayer]="mainPlayer"></app-tic-tac-toe>
+</div>
+<br>
+  

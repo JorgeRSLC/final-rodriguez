@@ -1,13 +1,15 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { GameService } from '../game.service';
+import { StorageService } from '../storage.service';
 import { Player } from '../player';
 import { CommonModule } from '@angular/common';
-
+import { Subscription } from 'rxjs'; 
+import { SortByScorePipe } from '../sort-by-score.pipe';
+import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-leader-board',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SortByScorePipe],
   templateUrl: './leader-board.component.html',
   styleUrl: './leader-board.component.css'
 })
@@ -15,21 +17,47 @@ export class LeaderBoardComponent implements OnInit {
   @Input() isGlobal: boolean = false;
   players: Player[] = [];
   title = '';
+  storageSubscription!: Subscription;
 
-  constructor(private gameService: GameService) { }
+  constructor( private storageService: StorageService) { }
 
   ngOnInit(): void {
     this.title = this.isGlobal ? 'Global Leader Board' : 'Local Leader Board';
-
+  
     if (this.isGlobal) {
-      this.gameService.getGlobalData().subscribe((data: any[]) => {
-        this.players = data.map((playerData: { playerId: string; score: number; }) => 
-          new Player(playerData.playerId, playerData.score));
+      this.storageService.getGlobalData().subscribe((fetchedPlayers: any[]) => {
+        this.players = fetchedPlayers.map(fetchedPlayer => new Player(fetchedPlayer.playerId, fetchedPlayer.score));
+      });    
+      // Subscribe to the update event
+      this.storageService.getGlobalLeaderBoardUpdated().subscribe(() => {
+        this.storageService.getGlobalData().subscribe((fetchedPlayers: any[]) => {
+          this.players = fetchedPlayers.map(fetchedPlayer => new Player(fetchedPlayer.playerId, fetchedPlayer.score));
+        });
       });
-    } else {
-      this.gameService.getPlayersSubject().subscribe((players: Player[]) => {
+          // Listen for the storage event
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'globalLeaderBoardUpdated') {
+        this.storageService.getGlobalData().subscribe((fetchedPlayers: any[]) => {
+          this.players = fetchedPlayers.map(fetchedPlayer => new Player(fetchedPlayer.playerId, fetchedPlayer.score));
+        });
+      }
+    });
+    }else {
+      this.storageService.refreshPlayers();
+      this.storageService.getPlayersSubject().subscribe((players: Player[]) => {
         this.players = players;
       });
+    }
+  
+    // Listen for the storage event
+    this.storageSubscription = this.storageService.listenForStorageChanges().subscribe(() => {
+      this.storageService.refreshPlayers();
+    });
+  }
+
+  ngOnDestroy(): void { // Implement the ngOnDestroy method
+    if (this.storageSubscription) {
+      this.storageSubscription.unsubscribe();
     }
   }
 }

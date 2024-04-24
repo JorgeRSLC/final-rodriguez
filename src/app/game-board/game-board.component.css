@@ -1,0 +1,21 @@
+.game-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    gap: 20px;
+  }
+  
+  .game-component {
+    flex: 1;
+  }
+  
+  .leader-board-container {
+    flex: 1;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+  
+  .player-info {
+    text-align: center;
+  }

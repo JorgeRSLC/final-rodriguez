@@ -1,11 +1,11 @@
 export class Player {
-    playerID: string;
+    playerId: string;
     alias: string;
     score: number;
   
-    constructor(playerID: string, score: number) {
-      this.playerID = playerID;
+    constructor(playerId: string, score: number) {
+      this.playerId = playerId;
       this.score = score;
-      this.alias = playerID.slice(-4);
+      this.alias = playerId.slice(-4);
     }
   }

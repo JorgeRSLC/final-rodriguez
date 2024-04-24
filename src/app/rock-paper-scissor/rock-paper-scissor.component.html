@@ -1,0 +1,19 @@
+<!-- // directive and interpolation -->
+<div *ngIf="!roundsFinished">
+  <h2 class="winner" *ngIf="playerMove">You chose {{playerMove}}</h2>
+  <h2 class="winner" *ngIf="computerMove">Computer chose {{computerMove}}</h2>
+  <h2 class="winner" *ngIf="roundWinner">{{roundWinner === 'tie' ? 
+        'Tie. No winner. Play Again.' : roundWinner + ' won this round'}}</h2>
+</div>
+
+<h3 class="winner" *ngIf="gameWinner">{{gameWinner}} won the game</h3>
+<div class="button-row">
+  <button class="move-button" (click)="setPlayerMove('rock')">Rock</button> 
+  <button class="move-button" (click)="setPlayerMove('paper')">Paper</button>
+  <button class="move-button" (click)="setPlayerMove('scissor')">Scissors</button>
+</div>
+<!-- // event binding -->
+<button class="play-button" *ngIf="roundsFinished" (click)="playGame()">
+  <ng-container *ngIf="gameStarted; else startGame">Play Again</ng-container>
+  <ng-template #startGame>Start Game</ng-template>
+</button>
