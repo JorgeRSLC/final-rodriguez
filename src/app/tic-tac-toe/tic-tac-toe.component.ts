@@ -30,15 +30,6 @@ export class TicTacToeComponent {
       this.board.push(new Tile('open', i));
     }
   }
-  ngOnInit() {
-    // this.socketIoService.listenForScoreUpdates().subscribe(data => {
-    //   // Update the mainPlayer's score
-    //   this.mainPlayer.score = data.score;
-  
-    //   // Update the global leaderboard
-    //   this.storageService.updateGlobalLeaderBoard(this.mainPlayer.playerId, this.mainPlayer.score);
-    // });
-  }
 
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['mainPlayer'] && changes['mainPlayer'].currentValue) {
