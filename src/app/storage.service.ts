@@ -4,6 +4,7 @@ import { Player } from './player';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -13,8 +14,11 @@ export class StorageService {
   private urlUpdate = 'https://tic-tac-toe-api-0oae.onrender.com/update-score';
 
   private globalLeaderBoardUpdated = new Subject<void>();
+
   
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+ 
+   }
 
   getGlobalData(): Observable<any> {
     return this.http.get(this.urlScores)

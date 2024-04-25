@@ -4,7 +4,7 @@ import { Player } from '../player';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs'; 
 import { SortByScorePipe } from '../sort-by-score.pipe';
-import { delay } from 'rxjs/operators';
+import { SocketIoService } from '../socket-io.service';
 
 @Component({
   selector: 'app-leader-board',
@@ -19,10 +19,11 @@ export class LeaderBoardComponent implements OnInit {
   title = '';
   storageSubscription!: Subscription;
 
-  constructor( private storageService: StorageService) { }
+  constructor( private storageService: StorageService, 
+    private socketIoService: SocketIoService) { }
 
   ngOnInit(): void {
-    this.title = this.isGlobal ? 'Global Leader Board' : 'Local Leader Board';
+    this.title = this.isGlobal ? 'Persistence Leader Board' : 'Local Leader Board';
   
     if (this.isGlobal) {
       this.storageService.getGlobalData().subscribe((fetchedPlayers: any[]) => {
@@ -41,6 +42,11 @@ export class LeaderBoardComponent implements OnInit {
           this.players = fetchedPlayers.map(fetchedPlayer => new Player(fetchedPlayer.playerId, fetchedPlayer.score));
         });
       }
+    });
+      this.socketIoService.listenForScoreUpdates().subscribe(data => {
+        this.storageService.getGlobalData().subscribe((fetchedPlayers: any[]) => {
+          this.players = fetchedPlayers.map(fetchedPlayer => new Player(fetchedPlayer.playerId, fetchedPlayer.score));
+        });
     });
     }else {
       this.storageService.refreshPlayers();

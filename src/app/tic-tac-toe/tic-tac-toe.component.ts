@@ -4,7 +4,7 @@ import { Tile } from '../tile';
 import { FormsModule } from '@angular/forms';
 import { Player } from '../player';
 import { StorageService } from '../storage.service';
-import { Subscription } from 'rxjs';
+import { SocketIoService } from '../socket-io.service';
 
 @Component({
   selector: 'app-tic-tac-toe',
@@ -22,12 +22,22 @@ export class TicTacToeComponent {
   winnerSet: boolean = false;
   isComputerPlaying: boolean = false;
   
-  constructor(private storageService: StorageService) {
+  constructor(private storageService: StorageService, 
+   private socketIoService: SocketIoService) {
     
     this.board = [];
     for (let i = 0; i < 9; i++) {
       this.board.push(new Tile('open', i));
     }
+  }
+  ngOnInit() {
+    // this.socketIoService.listenForScoreUpdates().subscribe(data => {
+    //   // Update the mainPlayer's score
+    //   this.mainPlayer.score = data.score;
+  
+    //   // Update the global leaderboard
+    //   this.storageService.updateGlobalLeaderBoard(this.mainPlayer.playerId, this.mainPlayer.score);
+    // });
   }
 
   async ngOnChanges(changes: SimpleChanges) {

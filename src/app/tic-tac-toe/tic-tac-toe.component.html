@@ -1,15 +1,30 @@
+<!-- Interpolation binding: Displaying the alias of the main player -->
 <h2 class="player-info">Player {{mainPlayer?.alias}} is on deck</h2>
+
 <h3>
+    <!-- Structural directive: *ngIf. Conditional rendering of the winner -->
     <span *ngIf="winner !== 'no winner yet' && winnerSet">Winner: {{winner}}</span>
+    <!-- Structural directive: *ngIf. Conditional rendering of the game status -->
     <span *ngIf="winner === 'no winner yet' && !gameStarted">Game not started</span>
+    <!-- Structural directive: *ngIf. Conditional rendering of the game status -->
     <span *ngIf="winner === 'no winner yet' && gameStarted">Game in progress</span>
 </h3>
+
 <div class="tic-tac-toe-board">
+    <!-- Structural directive: *ngFor. Looping through the board array -->
+    <!-- Property binding: [disabled]. Disabling the button based on game status -->
+    <!-- Event binding: (click). Calling the userChoice method on button click -->
     <button *ngFor="let tile of board" class="tic-tac-toe-button" 
         [disabled]="!gameStarted || tile.value !== 'open' || winnerSet" 
         (click)="userChoice(tile)">{{tile.value}}</button>
-  </div>
-  <button class="start-game-button" [disabled]="gameStarted" 
-            (click)="startGame()">Start Game</button>
+</div>
+
+<!-- Property binding: [disabled]. Disabling the button based on game status -->
+<!-- Event binding: (click). Calling the startGame method on button click -->
+<button class="start-game-button" [disabled]="gameStarted" 
+        (click)="startGame()">Start Game</button>
+
+<!-- Structural directive: *ngIf. Conditional rendering of the reset button -->
+<!-- Event binding: (click). Calling the resetBoard method on button click -->
 <button class="reset-game-button" *ngIf="winner  !== 'no winner yet' && winnerSet" 
-            (click)="resetBoard()">Reset Game</button>
+        (click)="resetBoard()">Reset Game</button>
